@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+     <!---
     <div v-switch="validateUrl" class="validateUrl">
       <p v-case="'validating'">Checking Url...</p>
       <p v-case="'validated'">Valid</p>
@@ -16,11 +17,12 @@
     <label for="''">Default</label>
 
     <hr>
-
+--->
+   
     <div v-switch="size">
-      <h1 v-case="'large'">Large</h1>
-      <h2 v-case="'medium'">Medium</h2>
-      <h3 v-case="'small'">Small</h3>
+      <h1 v-case="['large', 'he']">Large</h1>
+      <h2 v-case="['medium','she']">Medium</h2>
+      <h3 v-case="['small']">Small</h3>
     </div>
 
 
@@ -32,6 +34,13 @@
 
     <input type="radio" id="large" value="large" v-model="size">
     <label for="large">Large</label>
+
+    <input type="radio" id="he" value="he" v-model="size">
+    <label for="he">he</label>
+
+    <input type="radio" id="she" value="she" v-model="size">
+    <label for="she">she</label>
+    
     <hr>
 
     <h4>Installation:</h4>
@@ -112,7 +121,7 @@
 
 <script>
 import Vue from 'vue'
-import VSwitch from '../../dist/v-switch'
+import VSwitch from './v-switch'
 
 Vue.use(VSwitch)
 export default {
