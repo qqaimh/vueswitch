@@ -18,25 +18,44 @@ const containsCase =
 const containsDefault = 
   (arr = []) => containsDirective(arr, "default")
 
-function toggleDefaultElement(binding, vnode, { show }) {
+function hideDefaultElement(vnode) {
   const children = vnode.children
   for (let node of children) {
     if (node.data) { 
       if (containsDefault(node.data.directives)) {
-        const display = show 
-        ? node.elm.getAttribute("data-initial-display")
-        : "none"
-        node.elm.style.display = display
+        createCommentToHide(node);
       }
     }
   }
 }
 
-function revealElementWithInitialDisplay(element) {
-  const initialDisplay = element.getAttribute("data-initial-display")
-  element.style.display = initialDisplay !== "none" 
-    ? initialDisplay 
-    : "block"
+function createCommentToHide(vnode) {
+  // 创建一个注释元素
+  const comment = document.createComment(' ');
+  // 设置value值
+  Object.defineProperty(comment, 'setAttribute', {
+    value: () => undefined,
+  });
+  const orginElm = vnode.elm;
+  // 用注释节点替换 当前页面元素  
+  vnode.elm = comment;
+  // 下面作为初始化操作 赋值为空
+  vnode.text = ' ';
+  vnode.isComment = true;
+  vnode.context = undefined;
+  vnode.tag = undefined;
+  vnode.data.directives = undefined;
+
+  // 判断当前元素是否是组件  如果是组件的话也替换成 注释元素
+  if (vnode.componentInstance) {
+    vnode.componentInstance.$el = comment;
+  }
+
+  // 判断当前元素是否是文档节点或者是文档碎片节点 
+  if (orginElm.parentNode) {
+    // 从 DOM 树中删除 node 节点，除非它已经被删除了。
+    orginElm.parentNode.replaceChild(comment, orginElm);
+  }
 }
 
 function processSwitch(el, binding, vnode, data) {
@@ -47,26 +66,14 @@ function processSwitch(el, binding, vnode, data) {
     if (node.data) {
       const caseDirective = containsCase(node.data.directives, "case")
       if (caseDirective) {
-        //TODO
-        if (caseDirective.value.includes(data[binding.expression]) ) {
-          revealElementWithInitialDisplay(node.elm)
-          toggleDefaultElement(binding, vnode, { show: false })
-          matched = true
+        if (!caseDirective.value.includes(data[binding.expression]) ) {
+          createCommentToHide(node)     
         } else {
-          node.elm.style.display = "none"
+          matched = true
+          hideDefaultElement(vnode)
         }
       }
     }
-  }
-
-  if (!matched) {
-    toggleDefaultElement(binding, vnode, { show: true })
-  }
-}
-
-function saveInitialDsplayToDataAttr(elements) {
-  for (let child of elements) {
-    child.setAttribute("data-initial-display", child.style.display)
   }
 }
 
@@ -79,7 +86,6 @@ const vSwitch = {
 
   inserted(el, binding, vnode) {
     console.log(2222,el,  binding, el.children)
-    saveInitialDsplayToDataAttr(el.children)
     processSwitch(el, binding, vnode, _data)
     console.log('2222After',_data)
   },

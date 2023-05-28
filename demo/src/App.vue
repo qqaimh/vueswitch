@@ -19,10 +19,11 @@
     <hr>
 --->
    
-    <div v-switch="size">
-      <h1 v-case="['large', 'he']">Large</h1>
-      <h2 v-case="['medium','she']">Medium</h2>
-      <h3 v-case="['small']">Small</h3>
+    <div v-switch-show="size">
+      <h1 v-case-show="['large', 'he']">Large</h1>
+      <h2 v-case-show="['medium','she']">Medium</h2>
+      <h3 v-case-show="['small']">Small</h3>
+      <h3 v-default-show>default</h3>
     </div>
 
 
@@ -40,6 +41,17 @@
 
     <input type="radio" id="she" value="she" v-model="size">
     <label for="she">she</label>
+
+    <input type="radio" id="it" value="it" v-model="size">
+    <label for="it">it</label>
+
+
+    <div v-switch="size">
+      <h1 v-case="['large', 'he']">Large</h1>
+      <h2 v-case="['medium','she']">Medium</h2>
+      <h3 v-case="['small']">Small</h3>
+      <h3 v-default>default</h3>
+    </div>
     
     <hr>
 
@@ -121,9 +133,13 @@
 
 <script>
 import Vue from 'vue'
+import VSwitchShow from './v-switch-show'
 import VSwitch from './v-switch'
+import MyIf from './v-if'
 
+Vue.use(VSwitchShow)
 Vue.use(VSwitch)
+Vue.use(MyIf)
 export default {
   name: 'app',
 
